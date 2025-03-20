@@ -1,4 +1,4 @@
-const { connectDB, createTables } = require('./db.js');
+const { connectDB, createTables, createCustomer, createRestaurant } = require('./db.js');
 
 /* import express and pg */
 const express = require('express');
@@ -22,7 +22,19 @@ const init = async()=> {
   console.log('Connected to database.');
   await createTables();
   console.log('Created tables.');
-  app.listen(port, () => console.log(`listening on port ${port}`));
+
+  const [alfred, brian, charlie, david, eric, Ember, Savor, Drift, Zest, Hearth ] = await Promise.all([
+    createCustomer({ name: 'alfred'}),
+    createCustomer({ name: 'brian'}),
+    createCustomer({ name: 'charlie'}),
+    createCustomer({ name: 'david'}),
+    createCustomer({ name: 'eric'}),
+    createRestaurant({name: 'Ember'}),
+    createRestaurant({name: 'Savor'}),
+    createRestaurant({name: 'Drift'}),
+    createRestaurant({name: 'Zest'}),
+    createRestaurant({name: 'Hearth'}),
+  ]);
 };
 
 init();

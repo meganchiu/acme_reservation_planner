@@ -1,5 +1,7 @@
 const { Client } = require('pg');
 
+const uuid = require('uuid');
+
 const client = new Client(
   process.env.DATABASE_URL || 
   'postgres://megan.chiu:password@localhost:5432/acme_reservation_planner'
@@ -48,8 +50,26 @@ const createTables = async () => {
   }
 };
 
+const createCustomer = async(name) => {
+  const SQL = `
+    INSERT INTO customers(id, name) VALUES($1, $2) RETURNING *
+  `;
+  const response = await client.query(SQL, [uuid.v4(), name]);
+  return response.rows[0];
+};
+
+const createRestaurant = async(name) => {
+  const SQL = `
+    INSERT INTO restaurants(id, name) VALUES($1, $2) RETURNING *
+  `;
+  const response = await client.query(SQL, [uuid.v4(), name]);
+  return response.rows[0];
+};
+
 module.exports = {
   client,
   connectDB,
-  createTables
+  createTables,
+  createCustomer,
+  createRestaurant
 };
