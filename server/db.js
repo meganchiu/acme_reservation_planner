@@ -76,7 +76,15 @@ const fetchRestaurants = async()=> {
   const SQL = `SELECT * FROM restaurants`;
   const response = await client.query(SQL);
   return response.rows;
-};  
+};
+
+const createReservation = async({ customer_id, restaurant_id, date})=> {
+  const SQL = `
+    INSERT INTO reservations(id, customer_id, restaurant_id, date) VALUES($1, $2, $3, $4) RETURNING *
+  `;
+  const response = await client.query(SQL, [uuid.v4(), customer_id, restaurant_id, date]);
+  return response.rows[0];
+};
 
 module.exports = {
   client,
@@ -85,5 +93,6 @@ module.exports = {
   createCustomer,
   createRestaurant,
   fetchCustomers,
-  fetchRestaurants
+  fetchRestaurants,
+  createReservation
 };

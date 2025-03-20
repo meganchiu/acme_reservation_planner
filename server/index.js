@@ -1,4 +1,4 @@
-const { connectDB, createTables, createCustomer, createRestaurant, fetchCustomers, fetchRestaurants } = require('./db.js');
+const { connectDB, createTables, createCustomer, createRestaurant, fetchCustomers, fetchRestaurants, createReservation } = require('./db.js');
 
 /* import express and pg */
 const express = require('express');
@@ -24,19 +24,32 @@ const init = async()=> {
   console.log('Created tables.');
 
   const [alfred, brian, charlie, david, eric, Ember, Savor, Drift, Zest, Hearth ] = await Promise.all([
-    createCustomer({ name: 'alfred'}),
-    createCustomer({ name: 'brian'}),
-    createCustomer({ name: 'charlie'}),
-    createCustomer({ name: 'david'}),
-    createCustomer({ name: 'eric'}),
-    createRestaurant({name: 'Ember'}),
-    createRestaurant({name: 'Savor'}),
-    createRestaurant({name: 'Drift'}),
-    createRestaurant({name: 'Zest'}),
-    createRestaurant({name: 'Hearth'}),
+    createCustomer('alfred'),
+    createCustomer('brian'),
+    createCustomer('charlie'),
+    createCustomer('david'),
+    createCustomer('eric'),
+    createRestaurant('Ember'),
+    createRestaurant('Savor'),
+    createRestaurant('Drift'),
+    createRestaurant('Zest'),
+    createRestaurant('Hearth'),
   ]);
   console.log(await fetchCustomers());
   console.log(await fetchRestaurants());
+
+  const [reservation1, reservation2] = await Promise.all([
+    createReservation({
+      customer_id: alfred.id,
+      restaurant_id : Ember.id,
+      date: '03/25/2025'
+    }),
+    createReservation({
+      customer_id: charlie.id,
+      restaurant_id: Drift.id,
+      date: '03/30/2025'
+    }),
+  ]);
 };
 
 init();
