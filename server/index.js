@@ -1,7 +1,7 @@
 const { connectDB, createTables, createCustomer, createRestaurant, fetchCustomers, 
   fetchRestaurants, createReservation, fetchReservations, destroyReservation } = require('./db.js');
 
-/* import express and pg */
+/* imports */
 const express = require('express');
 const pg = require('pg');
 const cors = require('cors');
@@ -16,7 +16,6 @@ app.use(cors({ origin: 'http://localhost:5173', optionsSuccessStatus: 200 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 const init = async()=> {
   console.log('Connecting to database...');
   await connectDB();
@@ -24,6 +23,7 @@ const init = async()=> {
   await createTables();
   console.log('Created tables.');
 
+  // Seed customer and restaurant data
   const [alfred, brian, charlie, david, eric, Ember, Savor, Drift, Zest, Hearth ] = await Promise.all([
     createCustomer('alfred'),
     createCustomer('brian'),
@@ -38,6 +38,7 @@ const init = async()=> {
   ]);
   console.log(await fetchCustomers());
   console.log(await fetchRestaurants());
+
 
   const [reservation1, reservation2] = await Promise.all([
     createReservation({
@@ -67,6 +68,7 @@ const init = async()=> {
     });
 };
 
+// GET /api/customers route
 app.get('/api/customers', async(req, res, next)=> {
   try {
     res.send(await fetchCustomers());
@@ -76,6 +78,7 @@ app.get('/api/customers', async(req, res, next)=> {
   }
 });
 
+// GET /api/restaurants route
 app.get('/api/restaurants', async(req, res, next)=> {
   try {
     res.send(await fetchRestaurants());
@@ -85,6 +88,7 @@ app.get('/api/restaurants', async(req, res, next)=> {
   }
 });
 
+// GET /api/reservations route
 app.get('/api/reservations', async(req, res, next)=> {
   try {
     res.send(await fetchReservations());
@@ -94,6 +98,7 @@ app.get('/api/reservations', async(req, res, next)=> {
   }
 });
 
+// DELETE reservations route
 app.delete('/api/customers/:customer_id/reservations/:id',  async(req, res, next)=> {
   try {
       await destroyReservation({customer_id: req.params.customer_id, id: req.params.id});
@@ -104,6 +109,7 @@ app.delete('/api/customers/:customer_id/reservations/:id',  async(req, res, next
   }
 });
 
+// POST reservations route
 app.post('/api/customers/:customer_id/reservations',  async(req, res, next)=> {
   try {
       res.status(201).send(await createReservation({ customer_id: req.params.customer_id, restaurant_id: req.body.restaurant_id, date: req.body.date, party_count: req.body.party_count}));
@@ -112,4 +118,5 @@ app.post('/api/customers/:customer_id/reservations',  async(req, res, next)=> {
       next(ex);
   }
 });
+
 init();
