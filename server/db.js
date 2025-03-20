@@ -86,6 +86,18 @@ const createReservation = async({ customer_id, restaurant_id, date})=> {
   return response.rows[0];
 };
 
+const fetchReservations = async()=> {
+  const SQL = `SELECT * FROM reservations`;
+  const response = await client.query(SQL);
+  return response.rows;
+}; 
+
+const destroyReservation = async({ id, customer_id}) => {
+  console.log('Deleting reservation: ', id, customer_id)
+  const SQL = `DELETE FROM reservations WHERE id = $1 AND customer_id=$2`;
+  await client.query(SQL, [id, customer_id]);
+};
+
 module.exports = {
   client,
   connectDB,
@@ -94,5 +106,7 @@ module.exports = {
   createRestaurant,
   fetchCustomers,
   fetchRestaurants,
-  createReservation
+  createReservation,
+  fetchReservations,
+  destroyReservation
 };

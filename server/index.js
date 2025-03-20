@@ -1,4 +1,5 @@
-const { connectDB, createTables, createCustomer, createRestaurant, fetchCustomers, fetchRestaurants, createReservation } = require('./db.js');
+const { connectDB, createTables, createCustomer, createRestaurant, fetchCustomers, 
+  fetchRestaurants, createReservation, fetchReservations, destroyReservation } = require('./db.js');
 
 /* import express and pg */
 const express = require('express');
@@ -50,6 +51,39 @@ const init = async()=> {
       date: '03/30/2025'
     }),
   ]);
+  
+  console.log(await fetchReservations());
+
+  await destroyReservation({id: reservation1.id, customer_id: reservation1.id});
+
+  app.listen(port, () => console.log(`listening on port ${port}`));
 };
+
+app.get('/api/customers', async(req, res, next)=> {
+  try {
+    res.send(await fetchCustomers());
+  }
+  catch(ex){
+    next(ex);
+  }
+});
+
+app.get('/api/restaurants', async(req, res, next)=> {
+  try {
+    res.send(await fetchRestaurants());
+  }
+  catch(ex){
+    next(ex);
+  }
+});
+
+app.get('/api/reservations', async(req, res, next)=> {
+  try {
+    res.send(await fetchReservations());
+  }
+  catch(ex){
+    next(ex);
+  }
+});
 
 init();
