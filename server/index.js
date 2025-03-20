@@ -43,20 +43,28 @@ const init = async()=> {
     createReservation({
       customer_id: alfred.id,
       restaurant_id : Ember.id,
-      date: '03/25/2025'
+      date: '03/25/2025',
+      party_count: 5
     }),
     createReservation({
       customer_id: charlie.id,
       restaurant_id: Drift.id,
-      date: '03/30/2025'
+      date: '03/30/2025',
+      party_count: 8
     }),
   ]);
   
   console.log(await fetchReservations());
 
-  await destroyReservation({id: reservation1.id, customer_id: reservation1.id});
-
-  app.listen(port, () => console.log(`listening on port ${port}`));
+  app.listen(port, ()=> {
+    console.log(`Listening on PORT ${port}`);
+    console.log('CURL commands to test...');
+    console.log(`curl localhost:${port}/api/customers`);
+    console.log(`curl localhost:${port}/api/restaurants`);
+    console.log(`curl localhost:${port}/api/reservations`);
+    console.log(`curl -X DELETE localhost:${port}/api/customers/${alfred.id}/reservations/${reservation1.id}`);
+    console.log(`curl -X POST localhost:${port}/api/customers/${david.id}/reservations/ -d '{"restaurant_id":"${Zest.id}", "date": "05/15/2025", "party_count": "2"}' -H "Content-Type:application/json"`);
+    });
 };
 
 app.get('/api/customers', async(req, res, next)=> {
@@ -86,4 +94,22 @@ app.get('/api/reservations', async(req, res, next)=> {
   }
 });
 
+app.delete('/api/customers/:customer_id/reservations/:id',  async(req, res, next)=> {
+  try {
+      await destroyReservation({customer_id: req.params.customer_id, id: req.params.id});
+      res.sendStatus(204);
+  }
+  catch(ex){
+      next(ex);
+  }
+});
+
+app.post('/api/customers/:customer_id/reservations',  async(req, res, next)=> {
+  try {
+      res.status(201).send(await createReservation({ customer_id: req.params.customer_id, restaurant_id: req.body.restaurant_id, date: req.body.date, party_count: req.body.party_count}));
+  }
+  catch(ex){
+      next(ex);
+  }
+});
 init();

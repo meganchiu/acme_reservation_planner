@@ -37,6 +37,7 @@ const createTables = async () => {
       CREATE TABLE reservations(
           id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
           date DATE NOT NULL,
+          party_count INTEGER NOT NULL,
           customer_id UUID REFERENCES customers(id) NOT NULL,
           restaurant_id UUID REFERENCES restaurants(id) NOT NULL
       );
@@ -78,11 +79,11 @@ const fetchRestaurants = async()=> {
   return response.rows;
 };
 
-const createReservation = async({ customer_id, restaurant_id, date})=> {
+const createReservation = async({ customer_id, restaurant_id, date, party_count})=> {
   const SQL = `
-    INSERT INTO reservations(id, customer_id, restaurant_id, date) VALUES($1, $2, $3, $4) RETURNING *
+    INSERT INTO reservations(id, customer_id, restaurant_id, date, party_count) VALUES($1, $2, $3, $4, $5) RETURNING *
   `;
-  const response = await client.query(SQL, [uuid.v4(), customer_id, restaurant_id, date]);
+  const response = await client.query(SQL, [uuid.v4(), customer_id, restaurant_id, date, party_count]);
   return response.rows[0];
 };
 
@@ -108,5 +109,5 @@ module.exports = {
   fetchRestaurants,
   createReservation,
   fetchReservations,
-  destroyReservation
+  destroyReservation,
 };
