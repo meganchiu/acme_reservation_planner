@@ -1,4 +1,4 @@
-const { connectDB, createTables, createCustomer, createRestaurant } = require('./db.js');
+const { connectDB, createTables, createCustomer, createRestaurant, fetchCustomers, fetchRestaurants } = require('./db.js');
 
 /* import express and pg */
 const express = require('express');
@@ -35,6 +35,8 @@ const init = async()=> {
     createRestaurant({name: 'Zest'}),
     createRestaurant({name: 'Hearth'}),
   ]);
+  console.log(await fetchCustomers());
+  console.log(await fetchRestaurants());
 };
 
 init();
